@@ -44,13 +44,13 @@ print(result)
 The library currently only introduces concepts and abstract classes. JIPSO Foundation needs to work with **AI platforms** to innovate APIs in the JIPSO style, and requires funding to maintain the library.
 
 Library Development Roadmap:
-👉 v0.1: Establish CI/CD pipeline
-[ ] v0.2: JIPSO Foundation drafts abstract classes
-[ ] v0.3: JIPSO Foundation aligns with AI developers on abstract classes
-[ ] v0.4: Open for community contributions to build abstract classes
-[ ] v1.0: Alpha release with new APIs
-[ ] v1.1: Beta release with new APIs
-[ ] v1.2: Open for community contributions to development
+- 👉 v0.1: Establish CI/CD pipeline
+- [ ] v0.2: JIPSO Foundation drafts abstract classes
+- [ ] v0.3: JIPSO Foundation aligns with AI developers on abstract classes
+- [ ] v0.4: Open for community contributions to build abstract classes
+- [ ] v1.0: Alpha release with new APIs
+- [ ] v1.1: Beta release with new APIs
+- [ ] v1.2: Open for community contributions to development
 
 **⚠️ Local AI Limitation**: The current Docker release does not support local AI providers (Ollama, HuggingFace) due to dependency overhead - local AI packages increase image size from ~300MB to ~4.5GB and require 16-32GB RAM. **JIPSO Foundation is actively collaborating with AI platform vendors** to develop lightweight client SDKs and hybrid deployment architectures. For immediate local AI needs, use development installation (`pip install jipso[local]`) or Docker Compose with separate inference containers.
 
@@ -121,16 +121,16 @@ JCPs differ from traditional RFCs through their domain-expertise consensus model
 [Threads: @jipso_foundation](https://www.threads.com/@jipso_foundation) | vacancy |
 
 ### Announcements Channel
-[🇬🇧 Slack]()
-[🇨🇳 DingTalk]()
-[🇷🇺 Telegram]()
-[🇮🇳 WhatsApp]()
-[🇻🇳 Zalo]()
+- [🇬🇧 Slack]()
+- [🇨🇳 DingTalk]()
+- [🇷🇺 Telegram]()
+- [🇮🇳 WhatsApp]()
+- [🇻🇳 Zalo]()
 
 ### Official Contact
-[🌐 Website: jipso.org](https://jipso.org)
-[📬 Email: contact@jipso.org](mailto:contact@jipso.org)
-[🐛 #bug-reports](https://discord.gg/pb8aAMJG6t)
+- [🌐 Website: jipso.org](https://jipso.org)
+- [📬 Email: contact@jipso.org](mailto:contact@jipso.org)
+- [🐛 #bug-reports](https://discord.gg/pb8aAMJG6t)
 
 ## 💰 SPONSORSHIP
 This project has received no external funding, sponsorship, or investment. All development is fully volunteer-based at this stage.
