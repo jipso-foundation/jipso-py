@@ -3528,4 +3528,4 @@ xai = ["xai-sdk"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10"
-content-hash = "ba82c1314ff94befc233533f29ca60d29eb9cc299206bd1b15a17197401261b2"
+content-hash = "34162546e4792ccff30bf80e80bacb9c14494ef4e8749c3e1c2f0559ced4ed2a"
