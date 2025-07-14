@@ -2,7 +2,7 @@ import typer
 from typing import Optional
 
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 cli = typer.Typer(
   name = 'jipso',
