@@ -2907,13 +2907,13 @@ dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
 
 [[package]]
 name = "tencentcloud-sdk-python"
-version = "3.0.1422"
+version = "3.0.1423"
 description = "Tencent Cloud SDK for Python"
 optional = true
 python-versions = "*"
 files = [
-    {file = "tencentcloud-sdk-python-3.0.1422.tar.gz", hash = "sha256:a5f0afb36580286ca0f68dc3cc08b12d0bcb9006f29183d917e7571b27ebce61"},
-    {file = "tencentcloud_sdk_python-3.0.1422-py2.py3-none-any.whl", hash = "sha256:37372ac1a64fae4b554c6f8029797fcd20cfc2ad9422f2837e34c61a0cb42421"},
+    {file = "tencentcloud-sdk-python-3.0.1423.tar.gz", hash = "sha256:4f38f67fa481b9cdd80c5876eef3c4358e170ed92e9e03db91bf0ea71614e776"},
+    {file = "tencentcloud_sdk_python-3.0.1423-py2.py3-none-any.whl", hash = "sha256:60463ee3c5e34374265039cb4827115bbd7e24176912308e6c71f7ec99c10440"},
 ]
 
 [package.dependencies]
