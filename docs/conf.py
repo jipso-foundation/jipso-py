@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 project = 'JIPSO'
 author = 'JIPSO Foundation'
-release = '0.1.13'
+release = '0.1.14'
 
 # -- General configuration ---------------------------------------------------
 

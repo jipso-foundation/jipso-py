@@ -1,4 +1,4 @@
-name: Release to PyPI, DockerHub, ReadTheDocs, Codecov, FOSSA, Dependabot, Bandit
+name: Release to PyPI, DockerHub, Codecov, FOSSA, Dependabot, Bandit
 
 on:
   push:
@@ -123,16 +123,3 @@ jobs:
         push: true
         tags: |
           jipsofoundation/jipso:latest
-
-  docs:
-    needs: [pypi, docker]
-    environment: release
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-
-    steps:
-    - name: Trigger ReadTheDocs build
-      run: |
-        curl -X POST \
-          -H "Authorization: Token ${{ secrets.READTHEDOCS_TOKEN }}" \
-          https://readthedocs.org/api/v3/projects/jipso-py/versions/latest/builds/
