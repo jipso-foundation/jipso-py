@@ -370,20 +370,6 @@
     "object": "model",
     "owned_by": "system"
   },
-  "gpt-4.5-preview": {
-    "platform": "Openai",
-    "id": "gpt-4.5-preview",
-    "created": 1740623059,
-    "object": "model",
-    "owned_by": "system"
-  },
-  "gpt-4.5-preview-2025-02-27": {
-    "platform": "Openai",
-    "id": "gpt-4.5-preview-2025-02-27",
-    "created": 1740623304,
-    "object": "model",
-    "owned_by": "system"
-  },
   "gpt-4o-search-preview-2025-03-11": {
     "platform": "Openai",
     "id": "gpt-4o-search-preview-2025-03-11",

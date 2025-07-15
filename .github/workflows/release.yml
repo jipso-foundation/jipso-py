@@ -56,6 +56,7 @@ jobs:
   dependabot:
     needs: test
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
     - name: Approve Dependabot PR
       uses: hmarr/auto-approve-action@v4
@@ -142,7 +143,10 @@ jobs:
     steps:
     - name: Extract version from tag
       id: get_version
-      run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      run: |
+        VERSION="${GITHUB_REF##*/}"
+        VERSION="${VERSION#v}"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Trigger ReadTheDocs build (versioned)
       run: |
