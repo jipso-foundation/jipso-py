@@ -1,12 +1,12 @@
-name: Release to PyPI, DockerHub, Codecov, FOSSA, Dependabot, Bandit
+name: Release to PyPI, DockerHub, Codecov, Bandit
 
 on:
   push:
     tags:
-      - 'v*'
+    - 'v*'
   pull_request:
     branches:
-      - main
+    - main
 
 permissions:
   contents: read
@@ -30,21 +30,16 @@ jobs:
         curl -sSL https://install.python-poetry.org | python3 -
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Poetry lock
-      run: |
-        poetry lock
-
     - name: Install dependencies
       run: |
+        poetry lock
         poetry install
 
     - name: Run tests with coverage
-      run: |
-        poetry run pytest tests/release/ --cov=jipso --cov-report=xml
+      run: poetry run pytest tests/release/ --cov=jipso --cov-report=xml
 
     - name: Run Bandit security scan
-      run: |
-        poetry run bandit -r jipso -ll || true
+      run: poetry run bandit -r jipso -ll || true
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v5
@@ -52,21 +47,6 @@ jobs:
         fail_ci_if_error: true
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: jipso-foundation/jipso-py
-
-  dependabot:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-    - name: Approve Dependabot PR
-      uses: hmarr/auto-approve-action@v4
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Auto merge Dependabot PR
-      uses: pascalgn/automerge-action@v0.15.6
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   pypi:
     needs: test
@@ -89,6 +69,7 @@ jobs:
 
     - name: Build package with Poetry
       run: |
+        poetry lock
         poetry install
         poetry build
 
@@ -121,5 +102,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: |
-          jipsofoundation/jipso:latest
+        tags: jipsofoundation/jipso:latest

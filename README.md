@@ -7,7 +7,7 @@
   <a href="https://codecov.io/gh/jipso-foundation/jipso-py">
     <img src="https://codecov.io/gh/jipso-foundation/jipso-py/branch/main/graph/badge.svg" alt="Codecov"/>
   </a>
-  <a href="https://badge.fury.io/py/jipso">
+  <a href="https://pypi.org/project/jipso">
     <img src="https://badge.fury.io/py/jipso.svg" alt="PyPI version"/>
   </a>
   <a href="https://hub.docker.com/r/jipsofoundation/jipso">
