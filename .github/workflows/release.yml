@@ -68,7 +68,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  publish_pypi:
+  pypi:
     needs: test
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
@@ -95,12 +95,10 @@ jobs:
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
         attestations: true
         verbose: true
 
-  publish_docker:
+  docker:
     needs: test
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
@@ -108,16 +106,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Extract version from tag
-      id: get_version
-      run: |
-        VERSION="${GITHUB_REF##*/}"
-        VERSION="${VERSION#v}"
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-    - name: Debug version
-      run: echo "🔖 Version is $VERSION"
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -136,23 +124,15 @@ jobs:
         tags: |
           jipsofoundation/jipso:latest
 
-  publish_docs:
-    needs: [publish_pypi, publish_docker]
+  docs:
+    needs: [pypi, docker]
     environment: release
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
-    - name: Extract version from tag
-      id: get_version
+    - name: Trigger ReadTheDocs build
       run: |
-        VERSION="${GITHUB_REF##*/}"
-        VERSION="${VERSION#v}"
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-    - name: Trigger ReadTheDocs build (versioned)
-      run: |
-        echo "🔖 Trigger RTD for version: $VERSION"
         curl -X POST \
           -H "Authorization: Token ${{ secrets.READTHEDOCS_TOKEN }}" \
-          https://readthedocs.org/api/v3/projects/jipso-py/versions/${VERSION}/builds/
+          https://readthedocs.org/api/v3/projects/jipso-py/versions/latest/builds/
