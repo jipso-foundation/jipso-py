@@ -1,4 +1,4 @@
-name: Release to PyPI, DockerHub, Codecov, Bandit
+name: Release to PyPI, DockerHub, Codecov, Bandit, FOSSA
 
 on:
   push:

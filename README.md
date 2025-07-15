@@ -1,7 +1,6 @@
-<div style="text-align: center;">
+<p align="center">
   <img width="300" src="https://cdn.jipso.org/logo/jipso_framework.svg" alt="JIPSO Framework Logo"/>
-</div>
-
+</p>
 
 <p align="center">
   <a href="https://codecov.io/gh/jipso-foundation/jipso-py">

@@ -34,16 +34,8 @@ Mind Package (AI Clients)
 .. autosummary::
    :toctree: generated
 
-   jipso.Mind.ClientAnthropic
-   jipso.Mind.ClientOpenai
-   jipso.Mind.ClientGoogle
-   jipso.Mind.ClientXai
-   jipso.Mind.ClientAlibabacloud
-   jipso.Mind.ClientTencent
-   jipso.Mind.ClientSberbank
-   jipso.Mind.ClientOllama
-   jipso.Mind.ClientLocalHuggingface
-   jipso.Mind.ClientCloudHuggingface
+   jipso.Mind.Client
+   jipso.Mind.Model
 
 Body Package (Multimedia Processing)
 ------------------------------------
