@@ -1,0 +1,14 @@
+[run]
+omit =
+  */__init__.py
+  jipso-py/jipso/Mind/Client.py
+  jipso-py/jipso/Mind/Model.py
+
+[report]
+exclude_lines =
+  pragma: no cover
+  if __name__ == .__main__.:
+  import
+  from
+  pass
+  return

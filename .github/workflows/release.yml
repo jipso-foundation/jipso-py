@@ -54,8 +54,6 @@ jobs:
         slug: jipso-foundation/jipso-py
 
   dependabot:
-    environment: release
-    if: ${{ github.actor == 'dependabot[bot]' }}
     needs: test
     runs-on: ubuntu-latest
     steps:
