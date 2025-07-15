@@ -111,7 +111,10 @@ jobs:
 
     - name: Extract version from tag
       id: get_version
-      run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      run: |
+        VERSION="${GITHUB_REF##*/}"
+        VERSION="${VERSION#v}"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Debug version
       run: echo "🔖 Version is $VERSION"
@@ -132,7 +135,6 @@ jobs:
         push: true
         tags: |
           jipsofoundation/jipso:latest
-          jipsofoundation/jipso:${{ env.VERSION }}
 
   publish_docs:
     needs: [publish_pypi, publish_docker]
