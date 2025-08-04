@@ -223,20 +223,6 @@
     "object": "model",
     "owned_by": "system"
   },
-  "o1-preview-2024-09-12": {
-    "platform": "Openai",
-    "id": "o1-preview-2024-09-12",
-    "created": 1725648865,
-    "object": "model",
-    "owned_by": "system"
-  },
-  "o1-preview": {
-    "platform": "Openai",
-    "id": "o1-preview",
-    "created": 1725648897,
-    "object": "model",
-    "owned_by": "system"
-  },
   "o1-mini-2024-09-12": {
     "platform": "Openai",
     "id": "o1-mini-2024-09-12",
@@ -598,42 +584,6 @@
     "top_p": null,
     "top_k": null
   },
-  "models\/gemini-1.0-pro-vision-latest": {
-    "platform": "Gemini",
-    "name": "models\/gemini-1.0-pro-vision-latest",
-    "base_model_id": "",
-    "version": "001",
-    "display_name": "Gemini 1.0 Pro Vision",
-    "description": "The original Gemini 1.0 Pro Vision model version which was optimized for image understanding. Gemini 1.0 Pro Vision was deprecated on July 12, 2024. Move to a newer Gemini version.",
-    "input_token_limit": 12288,
-    "output_token_limit": 4096,
-    "supported_generation_methods": [
-      "generateContent",
-      "countTokens"
-    ],
-    "temperature": 0.4,
-    "max_temperature": null,
-    "top_p": 1.0,
-    "top_k": 32
-  },
-  "models\/gemini-pro-vision": {
-    "platform": "Gemini",
-    "name": "models\/gemini-pro-vision",
-    "base_model_id": "",
-    "version": "001",
-    "display_name": "Gemini 1.0 Pro Vision",
-    "description": "The original Gemini 1.0 Pro Vision model version which was optimized for image understanding. Gemini 1.0 Pro Vision was deprecated on July 12, 2024. Move to a newer Gemini version.",
-    "input_token_limit": 12288,
-    "output_token_limit": 4096,
-    "supported_generation_methods": [
-      "generateContent",
-      "countTokens"
-    ],
-    "temperature": 0.4,
-    "max_temperature": null,
-    "top_p": 1.0,
-    "top_k": 32
-  },
   "models\/gemini-1.5-pro-latest": {
     "platform": "Gemini",
     "name": "models\/gemini-1.5-pro-latest",
@@ -821,26 +771,6 @@
     "top_p": 0.95,
     "top_k": 64
   },
-  "models\/gemini-2.5-flash-preview-04-17": {
-    "platform": "Gemini",
-    "name": "models\/gemini-2.5-flash-preview-04-17",
-    "base_model_id": "",
-    "version": "2.5-preview-04-17",
-    "display_name": "Gemini 2.5 Flash Preview 04-17",
-    "description": "Preview release (April 17th, 2025) of Gemini 2.5 Flash",
-    "input_token_limit": 1048576,
-    "output_token_limit": 65536,
-    "supported_generation_methods": [
-      "generateContent",
-      "countTokens",
-      "createCachedContent",
-      "batchGenerateContent"
-    ],
-    "temperature": 1.0,
-    "max_temperature": 2.0,
-    "top_p": 0.95,
-    "top_k": 64
-  },
   "models\/gemini-2.5-flash-preview-05-20": {
     "platform": "Gemini",
     "name": "models\/gemini-2.5-flash-preview-05-20",
@@ -868,26 +798,6 @@
     "version": "001",
     "display_name": "Gemini 2.5 Flash",
     "description": "Stable version of Gemini 2.5 Flash, our mid-size multimodal model that supports up to 1 million tokens, released in June of 2025.",
-    "input_token_limit": 1048576,
-    "output_token_limit": 65536,
-    "supported_generation_methods": [
-      "generateContent",
-      "countTokens",
-      "createCachedContent",
-      "batchGenerateContent"
-    ],
-    "temperature": 1.0,
-    "max_temperature": 2.0,
-    "top_p": 0.95,
-    "top_k": 64
-  },
-  "models\/gemini-2.5-flash-preview-04-17-thinking": {
-    "platform": "Gemini",
-    "name": "models\/gemini-2.5-flash-preview-04-17-thinking",
-    "base_model_id": "",
-    "version": "2.5-preview-04-17",
-    "display_name": "Gemini 2.5 Flash Preview 04-17 for cursor testing",
-    "description": "Preview release (April 17th, 2025) of Gemini 2.5 Flash",
     "input_token_limit": 1048576,
     "output_token_limit": 65536,
     "supported_generation_methods": [
@@ -1221,8 +1131,8 @@
     "platform": "Gemini",
     "name": "models\/gemini-2.0-flash-thinking-exp-01-21",
     "base_model_id": "",
-    "version": "2.5-preview-04-17",
-    "display_name": "Gemini 2.5 Flash Preview 04-17",
+    "version": "2.5-preview-05-20",
+    "display_name": "Gemini 2.5 Flash Preview 05-20",
     "description": "Preview release (April 17th, 2025) of Gemini 2.5 Flash",
     "input_token_limit": 1048576,
     "output_token_limit": 65536,
@@ -1241,8 +1151,8 @@
     "platform": "Gemini",
     "name": "models\/gemini-2.0-flash-thinking-exp",
     "base_model_id": "",
-    "version": "2.5-preview-04-17",
-    "display_name": "Gemini 2.5 Flash Preview 04-17",
+    "version": "2.5-preview-05-20",
+    "display_name": "Gemini 2.5 Flash Preview 05-20",
     "description": "Preview release (April 17th, 2025) of Gemini 2.5 Flash",
     "input_token_limit": 1048576,
     "output_token_limit": 65536,
@@ -1261,8 +1171,8 @@
     "platform": "Gemini",
     "name": "models\/gemini-2.0-flash-thinking-exp-1219",
     "base_model_id": "",
-    "version": "2.5-preview-04-17",
-    "display_name": "Gemini 2.5 Flash Preview 04-17",
+    "version": "2.5-preview-05-20",
+    "display_name": "Gemini 2.5 Flash Preview 05-20",
     "description": "Preview release (April 17th, 2025) of Gemini 2.5 Flash",
     "input_token_limit": 1048576,
     "output_token_limit": 65536,
@@ -1436,6 +1346,26 @@
     ],
     "temperature": 1.0,
     "max_temperature": null,
+    "top_p": 0.95,
+    "top_k": 64
+  },
+  "models\/gemini-2.5-flash-lite": {
+    "platform": "Gemini",
+    "name": "models\/gemini-2.5-flash-lite",
+    "base_model_id": "",
+    "version": "001",
+    "display_name": "Gemini 2.5 Flash-Lite",
+    "description": "Stable verion of Gemini 2.5 Flash-Lite, released in July of 2025",
+    "input_token_limit": 1048576,
+    "output_token_limit": 65536,
+    "supported_generation_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ],
+    "temperature": 1.0,
+    "max_temperature": 2.0,
     "top_p": 0.95,
     "top_k": 64
   },
@@ -1615,6 +1545,40 @@
     "top_p": null,
     "top_k": null
   },
+  "models\/veo-3.0-generate-preview": {
+    "platform": "Gemini",
+    "name": "models\/veo-3.0-generate-preview",
+    "base_model_id": "",
+    "version": "3.0",
+    "display_name": "Veo 3",
+    "description": "Veo 3 preview. Access to this model requires billing to be enabled on the associated Google Cloud Platform account. Please visit https:\/\/console.cloud.google.com\/billing to enable it.",
+    "input_token_limit": 480,
+    "output_token_limit": 8192,
+    "supported_generation_methods": [
+      "predictLongRunning"
+    ],
+    "temperature": null,
+    "max_temperature": null,
+    "top_p": null,
+    "top_k": null
+  },
+  "models\/veo-3.0-fast-generate-preview": {
+    "platform": "Gemini",
+    "name": "models\/veo-3.0-fast-generate-preview",
+    "base_model_id": "",
+    "version": "3.0",
+    "display_name": "Veo 3 fast",
+    "description": "Veo 3 fast preview. Access to this model requires billing to be enabled on the associated Google Cloud Platform account. Please visit https:\/\/console.cloud.google.com\/billing to enable it.",
+    "input_token_limit": 480,
+    "output_token_limit": 8192,
+    "supported_generation_methods": [
+      "predictLongRunning"
+    ],
+    "temperature": null,
+    "max_temperature": null,
+    "top_p": null,
+    "top_k": null
+  },
   "models\/gemini-2.5-flash-preview-native-audio-dialog": {
     "platform": "Gemini",
     "name": "models\/gemini-2.5-flash-preview-native-audio-dialog",
@@ -1708,7 +1672,7 @@
   "qwen2-7b-instruct": {
     "platform": "Alibabacloud",
     "id": "qwen2-7b-instruct",
-    "created": 1728632039,
+    "created": 1753881763,
     "object": "model",
     "owned_by": "system"
   },

@@ -141,24 +141,23 @@ compute.exe()
 print(compute.o)
 ```
 
-## 🕌 ARCHITECT
+## 🕌 ARCHITECT `jipso-stack`
 
 |Node|Docker Image|Engine|Role|
 |--|--|--|--|
 |Client Node|-|jipso-py|Request jipso.Compute.exe()|
-|Worker Node|jipsofoundation/jipso|celery|Run jipso.Compute, wrap all AI model| 
+|Worker Node|jipsofoundation/jipso|celery|Run jipso.Compute, wrap all AI model|
+|Proxy Node| nginx| Nginx |Rate limiting |
+|Cache Node|-| Redis GPU? (please build it or we will jipso-cache) | Cache VRAM |
 |Broker Node| bitnami/kafka | Kafka|Message Queue Broker|
 |Database Node|postgres|PostgreSQL|Database for jipso.Compute|
 |Storage Node|minio/minio|Minio, S3, CDN|Media content|
-|Collector Node| grafana/alloy | Alloy | Metric collector|
-|Metric Node|bitnami/prometheus | Prometheus| Metric database: cost, SLA. Alert budget|
-|Monitor Node| grafana/grafana|Grafana|Metric monitoring|
+|Metric Node| influxdb | InfluxDB| Metric: cost, SLA. Metric database and monitoring. Worker Node proactive push|
 |Auth Node |keycloak/keycloak|Keycloak|Authentication, API key management|
 
 
 ## 💰 SPONSORSHIP
 This project has received no external funding, sponsorship, or investment. All development is fully volunteer-based at this stage.
-
 
 
 
