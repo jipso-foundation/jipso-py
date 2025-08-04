@@ -146,15 +146,19 @@ print(compute.o)
 |--|--|--|--|
 |Client Pod|-|jipso-py|Request jipso.Compute.exe()|
 |Worker Pod|jipsofoundation/jipso|celery|Run jipso.Compute, wrap all AI model|
-|Proxy Pod| nginx| Nginx |Rate limiting |
 |Cache Pod|-| Redis GPU? (please build it or we will jipso-cache) | Cache VRAM |
+|Proxy Pod| nginx| Nginx |Rate limiting |
 |Broker Pod| bitnami/kafka | Kafka|Message Queue Broker|
 |Database Pod|postgres|PostgreSQL|Database for jipso.Compute|
 |Storage Pod|minio/minio|Minio, S3, CDN|Media content|
 |Metric Pod| influxdb | InfluxDB| Metric: cost, SLA. Metric database and monitoring. Worker Pod proactive push|
-|Auth Pod |keycloak/keycloak|Keycloak|Authentication, API key management|
+|Auth Pod|keycloak/keycloak|Keycloak|Authentication, API key management|
 
-Deploy on top Kubernetes
+- Self-Build: Deploy on top Kubernetes
+- Multi-Vendor
+  + AI Providers (OpenAI, Anthropic) and Individual: Worker Pod, Cache Pod, Proxy Pod
+  + Cloud Providers (AWS, Alibaba Cloud): Broker Pod, Database Pod, Storage Pod, Metric Pod, Auth Pod
+  + SME Partners: Client Pod with UI/UX
 
 ## 💰 SPONSORSHIP
 This project has received no external funding, sponsorship, or investment. All development is fully volunteer-based at this stage.
