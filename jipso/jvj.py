@@ -1,4 +1,4 @@
-async def jvj():
+def jvj():
   """Compares performance of two AI systems or evaluators.
   
   The Judgment vs Judgment function evaluates relative capabilities between

@@ -1,8 +1,8 @@
-from jipso.Mind.Client import ClientOpenai
-from jipso.Mind.Client import ClientAnthropic
-from jipso.Mind.Client import ClientGemini
-from jipso.Mind.Client import ClientXai
-from jipso.Mind.Client import ClientAlibabacloud
+from jipso.Client import ClientOpenai
+from jipso.Client import ClientAnthropic
+from jipso.Client import ClientGemini
+from jipso.Client import ClientXai
+from jipso.Client import ClientAlibabacloud
 
 
 import ujson, os

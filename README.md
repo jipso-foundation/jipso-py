@@ -54,8 +54,7 @@ import jipso
 os.environ['ANTHROPIC_API_KEY'] = 'sk-ant-...'
 
 p1 = jipso.Prompt('Collect sales figures this week')
-p1.add('Customer trend analysis')
-print(p1)
+print(p1.add('Customer trend analysis'))
 # Collect sales figures this week and perform customer trend analysis
 
 p2 = jipso.Prompt('Customer trend analysis')
@@ -143,18 +142,19 @@ print(compute.o)
 
 ## 🕌 ARCHITECT `jipso-stack`
 
-|Node|Docker Image|Engine|Role|
+|Pod|Docker Image|Engine|Role|
 |--|--|--|--|
-|Client Node|-|jipso-py|Request jipso.Compute.exe()|
-|Worker Node|jipsofoundation/jipso|celery|Run jipso.Compute, wrap all AI model|
-|Proxy Node| nginx| Nginx |Rate limiting |
-|Cache Node|-| Redis GPU? (please build it or we will jipso-cache) | Cache VRAM |
-|Broker Node| bitnami/kafka | Kafka|Message Queue Broker|
-|Database Node|postgres|PostgreSQL|Database for jipso.Compute|
-|Storage Node|minio/minio|Minio, S3, CDN|Media content|
-|Metric Node| influxdb | InfluxDB| Metric: cost, SLA. Metric database and monitoring. Worker Node proactive push|
-|Auth Node |keycloak/keycloak|Keycloak|Authentication, API key management|
+|Client Pod|-|jipso-py|Request jipso.Compute.exe()|
+|Worker Pod|jipsofoundation/jipso|celery|Run jipso.Compute, wrap all AI model|
+|Proxy Pod| nginx| Nginx |Rate limiting |
+|Cache Pod|-| Redis GPU? (please build it or we will jipso-cache) | Cache VRAM |
+|Broker Pod| bitnami/kafka | Kafka|Message Queue Broker|
+|Database Pod|postgres|PostgreSQL|Database for jipso.Compute|
+|Storage Pod|minio/minio|Minio, S3, CDN|Media content|
+|Metric Pod| influxdb | InfluxDB| Metric: cost, SLA. Metric database and monitoring. Worker Pod proactive push|
+|Auth Pod |keycloak/keycloak|Keycloak|Authentication, API key management|
 
+Deploy on top Kubernetes
 
 ## 💰 SPONSORSHIP
 This project has received no external funding, sponsorship, or investment. All development is fully volunteer-based at this stage.

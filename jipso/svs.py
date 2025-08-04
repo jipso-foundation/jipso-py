@@ -1,4 +1,4 @@
-async def svs():
+def svs():
   """Compares effectiveness of evaluation criteria and standards.
   
   The Standard vs Standard function enables meta-evaluation of assessment

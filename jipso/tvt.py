@@ -1,4 +1,4 @@
-async def tvt():
+def tvt():
   """Compares arbitrary text content across any evaluation criteria.
   
   The Text vs Text function provides universal evaluation methodology for

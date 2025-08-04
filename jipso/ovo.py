@@ -1,4 +1,4 @@
-async def ovo():
+def ovo():
   """Compares consistency and quality between AI outputs.
   
   The Output vs Output function validates production deployment readiness

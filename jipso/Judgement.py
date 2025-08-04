@@ -1,7 +1,6 @@
-from pydantic import BaseModel, ConfigDict
+from jipso._Judgement import _Judgement
 
-
-class Judgement(BaseModel):
+class Judgement:
   """Represents the AI system or evaluator performing analysis.
   
   The Judgement component (J) encapsulates the reasoning entity - whether it's
@@ -13,8 +12,9 @@ class Judgement(BaseModel):
   deployments. Enables ensemble operations with weighted voting and distributed
   consensus building for enhanced reliability and bias reduction.
   """
-  
-  model_config = ConfigDict(extra='allow')
-  
-  def __str__(self) -> str: pass
-  
+
+  def __init__(self, model):
+    self._j = _Judgement(model)
+
+  def __call__(self, i=None, p=None, s=None):
+    return self._j(i,p,s)

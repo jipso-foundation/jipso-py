@@ -1,4 +1,4 @@
-async def ivi():
+def ivi():
   """Compares information density and decision-making value of inputs.
   
   The Input vs Input function evaluates relative information content within

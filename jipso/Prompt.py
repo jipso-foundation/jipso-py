@@ -1,7 +1,8 @@
-from pydantic import BaseModel, ConfigDict
+from jipso._Judgement import _Judgement
 
 
-class Prompt(BaseModel):
+
+class Prompt:
   """Encapsulates instructions and methodology for AI execution.
   
   The Prompt component (P) defines HOW tasks should be performed - methodology,
@@ -15,7 +16,22 @@ class Prompt(BaseModel):
   for precise AI behavior control.
   """
 
-  model_config = ConfigDict(extra='allow')
+  def __init__(self, data, model='gpt-4-turbo'):
+    self.data = data
+    self._j = _Judgement(model)
+
+  def __or__(self, other, replace=False):
+    if isinstance(other, Prompt):
+      p2 = p2.data
+    o = self._j(p='Combine the content of Prompt P2 into Prompt P1', i=f'P1: {self.data}\nP2: {p2}')
+    if replace:
+      self.data = o
+    return o
   
-  def __str__(self) -> str: pass
-  
+  def add(self, other, replace=False):
+    if isinstance(other, str):
+      o = self._j(p='Please add component x to Prompt P', i=f'P: {self.data}\nx: {other}')
+    if replace:
+      self.data = o
+    return o
+    

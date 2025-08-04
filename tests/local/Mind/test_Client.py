@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.asyncio
 async def test_ClientOpenai():
-  from jipso.Mind.Client import ClientOpenai
+  from jipso.Client import ClientOpenai
   response = ClientOpenai().chat.completions.create(
     model = 'gpt-3.5-turbo',
     messages = [{'role': 'user', 'content': 'Hello ChatGPT!'}],
@@ -19,7 +19,7 @@ async def test_ClientOpenai():
 
 @pytest.mark.asyncio
 async def test_ClientAnthropic():
-  from jipso.Mind.Client import ClientAnthropic
+  from jipso.Client import ClientAnthropic
   response = ClientAnthropic().messages.create(
     model = 'claude-3-haiku-20240307',
     max_tokens = 100,
@@ -31,7 +31,7 @@ async def test_ClientAnthropic():
 
 @pytest.mark.asyncio
 async def test_ClientGemini():
-  from jipso.Mind.Client import ClientGemini
+  from jipso.Client import ClientGemini
   client = ClientGemini()
   generation_config = client.GenerationConfig(temperature=0, max_output_tokens=100)
   model = client.GenerativeModel('models/gemini-1.5-flash')
@@ -41,7 +41,7 @@ async def test_ClientGemini():
 
 @pytest.mark.asyncio
 async def test_ClientXai():
-  from jipso.Mind.Client import ClientXai
+  from jipso.Client import ClientXai
   from xai_sdk.chat import user
   client = ClientXai()
   chat = client.chat.create(
@@ -56,7 +56,7 @@ async def test_ClientXai():
 
 @pytest.mark.asyncio
 async def test_ClientAlibabacloud():
-  from jipso.Mind.Client import ClientAlibabacloud
+  from jipso.Client import ClientAlibabacloud
   response = ClientAlibabacloud().chat.completions.create(
     model = 'qwen-turbo',
     messages = [{'role': 'user', 'content': 'Hello Qwen!'}],
@@ -69,36 +69,36 @@ async def test_ClientAlibabacloud():
 
 @pytest.mark.asyncio
 async def test_ClientTencentcloud():
-  from jipso.Mind.Client import ClientTencentcloud
+  from jipso.Client import ClientTencentcloud
   assert True
 
 @pytest.mark.asyncio
 async def test_ClientByteplus():
-  from jipso.Mind.Client import ClientByteplus
+  from jipso.Client import ClientByteplus
   assert True
 
 
 @pytest.mark.asyncio
 async def test_ClientSberbank():
-  from jipso.Mind.Client import ClientSberbank
+  from jipso.Client import ClientSberbank
   assert True
 
 
 @pytest.mark.asyncio
 async def test_ClientCloudHuggingface():
-  from jipso.Mind.Client import ClientCloudHuggingface
+  from jipso.Client import ClientCloudHuggingface
   assert True
 
 
 @pytest.mark.asyncio
 async def test_ClientLocalHuggingface():
-  from jipso.Mind.Client import ClientLocalHuggingface
+  from jipso.Client import ClientLocalHuggingface
   assert True
 
 
 @pytest.mark.asyncio
 async def test_ClientOllama():
-  from jipso.Mind.Client import ClientOllama
+  from jipso.Client import ClientOllama
   assert True
 
 
