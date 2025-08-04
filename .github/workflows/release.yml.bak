@@ -1,4 +1,4 @@
-name: Release to PyPI, Bandit, FOSSA # Test, DockerHub, Codecov
+name: Release to Test, PyPI, DockerHub, Codecov, Bandit, FOSSA
 
 on:
   push:
@@ -35,18 +35,18 @@ jobs:
         poetry lock
         poetry install
 
-    # - name: Run tests with coverage
-    #   run: poetry run pytest tests/release/ --cov=jipso --cov-report=xml
+    - name: Run tests with coverage
+      run: poetry run pytest tests/release/ --cov=jipso --cov-report=xml
 
     - name: Run Bandit security scan
       run: poetry run bandit -r jipso -ll || true
 
-    # - name: Upload coverage to Codecov
-    #   uses: codecov/codecov-action@v5
-    #   with:
-    #     fail_ci_if_error: true
-    #     token: ${{ secrets.CODECOV_TOKEN }}
-    #     slug: jipso-foundation/jipso-py
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        fail_ci_if_error: true
+        token: ${{ secrets.CODECOV_TOKEN }}
+        slug: jipso-foundation/jipso-py
 
   pypi:
     needs: test
@@ -79,27 +79,27 @@ jobs:
         attestations: true
         verbose: true
 
-  # docker:
-  #   needs: test
-  #   runs-on: ubuntu-latest
-  #   if: startsWith(github.ref, 'refs/tags/')
-  #   environment: release
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    environment: release
 
-  #   steps:
-  #   - uses: actions/checkout@v4
+    steps:
+    - uses: actions/checkout@v4
 
-  #   - name: Set up Docker Buildx
-  #     uses: docker/setup-buildx-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-  #   - name: Login to DockerHub
-  #     uses: docker/login-action@v3
-  #     with:
-  #       username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #       password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  #   - name: Build and Push Docker image
-  #     uses: docker/build-push-action@v5
-  #     with:
-  #       context: .
-  #       push: true
-  #       tags: jipsofoundation/jipso:latest
+    - name: Build and Push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: jipsofoundation/jipso:latest
