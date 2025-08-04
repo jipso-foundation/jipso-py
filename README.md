@@ -13,13 +13,13 @@
 </p>
 
 
-## INSTALL
+## 🛠️ INSTALL `jipso-py`
 
 ```bash
 pip install jipso
 ```
 
-## 🚀 QUICK START
+## 🚀 QUICK START `jipso-py`
 
 ### Example 1
 
