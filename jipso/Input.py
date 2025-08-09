@@ -1,7 +1,6 @@
-from pydantic import BaseModel, ConfigDict
+from jipso.Conversation import Conversation
 
-
-class Input(BaseModel):
+class Input(Conversation):
   """Manages information and data provided for AI processing.
   
   The Input component (I) represents objective reality - facts, data, content
@@ -13,8 +12,4 @@ class Input(BaseModel):
   integration and cross-platform information sharing through the import/export
   ecosystem.
   """
-  
-  model_config = ConfigDict(extra='allow')
-  
-  def __str__(self) -> str: pass
-  
+  pass

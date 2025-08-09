@@ -1,7 +1,7 @@
-from pydantic import BaseModel, ConfigDict
+from jipso.Conversation import Conversation
 
 
-class Standard(BaseModel):
+class Standard(Conversation):
   """Defines evaluation criteria and quality expectations.
   
   The Standard component (S) specifies WHAT constitutes good output - quality
@@ -14,8 +14,4 @@ class Standard(BaseModel):
   compliance frameworks, and systematic quality assurance standards from
   industry and academic institutions.
   """
-
-  model_config = ConfigDict(extra='allow')
-  
-  def __str__(self) -> str: pass
-  
+  pass
