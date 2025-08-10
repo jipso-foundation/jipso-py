@@ -1,5 +1,6 @@
-from jipso.utils import get_platform, get_client
+from jipso.utils import get_platform, get_client, get_result
 from jipso.Conversation import Conversation
+from jipso.Message import Message
 from jipso.Input import Input
 from jipso.Standard import Standard
 from jipso.Output import Output
@@ -18,12 +19,23 @@ class Judgement:
   consensus building for enhanced reliability and bias reduction.
   """
   
-  def __init__(self, model):
-    self.model = model
+  def __init__(self, model=None):
+    if model:
+      self.model = model
+    else:
+      from dotenv import load_dotenv
+      from os import getenv
+      load_dotenv()
+      self.model = getenv('DEFAUT_MODEL')
     self.platform = get_platform(self.model)
     self.client = get_client(self.platform)
 
-  def __call__(self, i=None, p=None, s=None):
+  def __call__(self, i=None, p=None, s=None, j=None):
+    if j:
+      self.model = j
+      self.platform = get_platform(self.model)
+      self.client = get_client(self.platform)
+
     chat = Conversation(p) + Standard(s).content + Input(i).content
     text = chat.request(platform=self.platform)
 
@@ -37,7 +49,7 @@ class Judgement:
       res = self.client.messages.create(
         model = self.model,
         messages = text,
-        max_tokens = 100,
+        max_tokens = 512,
       )
     
     elif self.platform == 'Gemini':
@@ -68,3 +80,9 @@ class Judgement:
       res = self.client.ChatCompletions(req).to_json_string()
 
     return Output(response=res, model=self.model, platform=self.platform)
+
+  def exe(self, i=None, p=None, s=None, j=None, verbose=False):
+    o = self(p=p, i=i, s=s, j=j)
+    res = get_result(str(o))[0] if not verbose else str(o)
+    res = Message(res, role='assistant', label=self.model)
+    return res
