@@ -4,43 +4,44 @@ from copy import copy
 
 
 class Conversation:
-  def __init__(self, data):
-    self.data = self.init_data(data)
-    if isinstance(data, Conversation):
+  def __init__(self, content):
+    self.content = self.init_content(content)
+    if isinstance(content, Conversation):
       for attr in {'model', 'platform', 'client'}:
-        if hasattr(data, attr):
-          setattr(self, attr, getattr(data, attr))
-    elif isinstance(data, dict):
-      if 'data' in data:
-        del data['data']
-      for k,v in data.items():
+        if hasattr(content, attr):
+          setattr(self, attr, getattr(content, attr))
+    elif isinstance(content, dict):
+      if 'content' in content:
+        del content['content']
+      for k,v in content.items():
         setattr(self, k, v)
     self._iterator_index = 0
 
 
-  def init_data(self, data):
-    if data is None or isinstance(data, str|int|float|bytes|Message):
-      item = Message(data)
+  def init_content(self, content):
+    if content is None or isinstance(content, str|int|float|bytes|Message):
+      item = Message(content)
       return [item] if item else []
-    elif isinstance(data, list|tuple|set):
+    elif isinstance(content, list|tuple|set):
       res = []
-      for item in data:
-        item = Message(item)
+      for item in content:
         if item:
+          if not isinstance(item, Message):
+            item = Message(item)
           res.append(item)
       return res
-    elif isinstance(data, Conversation):
-      return data.data.copy() if data else []
-    elif isinstance(data, dict):
-      if data.get('data', False):
+    elif isinstance(content, Conversation):
+      return content.content.copy() if content else []
+    elif isinstance(content, dict):
+      if content.get('content', False):
         return []
       else:
-        return self.init_data(data['data'])
+        return self.init_content(content['content'])
 
   # ----------------------------------------
 
   def __str__(self) -> str:
-    return '\n'.join([str(m) for m in self.data])
+    return '\n'.join([str(m) for m in self.content])
 
   def __repr__(self) -> str:
     return f'Conversation({len(self)} Message)'
@@ -55,24 +56,24 @@ class Conversation:
   def __setitem__(self, index, value):
     index = self.find(self, index)[0]
     if index is not None:
-      self.data[index] = Message(value)
+      self.content[index] = Message(value)
 
   def __delitem__(self, index):
     index = self.find(self, index)[0]
     if index is not None:
-      del self.data[index]
+      del self.content[index]
 
   def __len__(self) -> int:
-    return len(self.data)
+    return len(self.content)
 
   def __iter__(self):
     self._iterator_index = 0
     return self
     
   def __next__(self):
-    if self._iterator_index >= len(self.data):
+    if self._iterator_index >= len(self.content):
       raise StopIteration
-    result = self.data[self._iterator_index]
+    result = self.content[self._iterator_index]
     self._iterator_index += 1
     return result
   
@@ -80,13 +81,13 @@ class Conversation:
     return self.find(item)[0] is not None
   
   def __bool__(self) -> bool:
-    return len(self.data) != 0
+    return len(self.content) != 0
 
   # ----------------------------------------
 
   def find_by_hash(self, item):
     item = item.strip().lower()
-    for k,m in enumerate(self.data):
+    for k,m in enumerate(self.content):
       if m.hash == item:
         return k,m
     return None, None
@@ -97,9 +98,9 @@ class Conversation:
         item = Message(item).hash
       return self.find_by_hash(item)
     else:
-      try: item = int(item) % len(self.data)
+      try: item = int(item) % len(self.content)
       except: return None, None
-      else: return item, self.data[item]
+      else: return item, self.content[item]
 
   # ----------------------------------------
 
@@ -120,13 +121,13 @@ class Conversation:
 
   def request(self, platform=None, model=None):
     platform = self.get_platform(platform, model)
-    new_content = ['']*len(self.data)
-    for k,m in enumerate(self.data):
+    new_content = ['']*len(self.content)
+    for k,m in enumerate(self.content):
       if hasattr(m, 'label') and m.label:
         new_content[k] = f'[{m.label}] {m.content}'
       else:
         new_content[k] = m.content
-    zip_content = zip([m.role for m in self.data], new_content)
+    zip_content = zip([m.role for m in self.content], new_content)
     if platform in {'Openai', 'Anthropic', 'Alibabacloud', 'Byteplus', 'Sberbank'}:
       return [{'role': r, 'content': c} for r,c in zip_content if c]
     elif platform == 'Tencentcloud':
@@ -150,14 +151,14 @@ class Conversation:
     chat = self if replace else copy(self)
     if not isinstance(item, Message):
       item = Message(item)
-    chat.data.append(item)
+    chat.content.append(item)
     return chat
 
   def extend(self, other, replace=True):
     chat = self if replace else copy(self)
     if not isinstance(other, Conversation):
       other = Conversation(other)
-    chat.data.extend(other)
+    chat.content.extend(other)
     return chat
   
   def __add__(self, other):

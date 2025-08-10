@@ -36,3 +36,9 @@ def get_client(platform):
   else:
     return None
 
+
+def get_result(answer):
+  answer = answer.strip()
+  a = answer.find('<result>') + len('<result>')
+  b = answer.find('</result>')
+  return answer[a:b].strip(), answer[:a] + answer[b:]

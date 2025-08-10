@@ -1,6 +1,6 @@
 from jipso.Conversation import Conversation
 
-class Input(Conversation):
+class Input:
   """Manages information and data provided for AI processing.
   
   The Input component (I) represents objective reality - facts, data, content
@@ -12,4 +12,5 @@ class Input(Conversation):
   integration and cross-platform information sharing through the import/export
   ecosystem.
   """
-  pass
+  def __init__(self, content):
+    self.content = Conversation(content)

@@ -27,30 +27,30 @@ def to_str(content) -> str | None:
 
 
 class Message:
-  def __init__(self, content, role='user', hash=True):
+  def __init__(self, content, role=None, hash=True, label=None):
     tmp = to_str(content)
     if tmp is not None:
       self.content = tmp
-      if isinstance(content, Message):
-        for u in {'label', 'role'}:
-          if hasattr(content, u):
-            setattr(self, u, getattr(content, u))
-      else:
-        self.role = role
     elif len(content) == 0:
       self.content = ''
-      self.role = role
     elif isinstance(content, list|tuple|set):
       self.content = '\n'.join([to_str(item) for item in content])
-      self.role = role
     elif isinstance(content, dict):
       for k,v in content.items():
         setattr(self, k, v)
       if not hasattr(self, 'content'): self.content = ''
-      if not hasattr(self, 'role'): self.role = role
 
     if hash:
       self._hash = hashlib.sha3_256(self.content.encode())
+    
+    if label:
+      self.label = label
+
+    if role:
+      self.role = role
+    else:
+      if not hasattr(self, 'role') or not self.role:
+        self.role = 'user'
 
   @property
   def hash(self) -> str:

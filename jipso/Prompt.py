@@ -1,5 +1,6 @@
 from jipso.Judgement import Judgement
-
+from jipso.Message import Message
+from jipso.utils import get_result
 
 
 class Prompt:
@@ -16,43 +17,75 @@ class Prompt:
   for precise AI behavior control.
   """
 
-  def __init__(self, data, model='gpt-4-turbo'):
-    self.data = data
+  def __init__(self, content, model='gpt-4-turbo'):
+    self.content = Message(content)
     self.j = Judgement(model)
 
-  def __str__(self): return self.data
+  def __str__(self) -> str:
+    return str(self.content)
+
+  def __repr__(self) -> str:
+    return f'Prompt({str(self)})'
+
+  def __copy__(self):
+    return Prompt(content=self.content, model=self.j.model)
+  
+  def __bool__(self) -> bool:
+    return bool(self.content)
 
   # ----------------------------------------
   # Set vs Element
   # ----------------------------------------
 
   def add(self, item, replace=True):
-    p = "Add the instruction or requirement 'x' to the existing Prompt P. Integrate it naturally into the prompt structure while preserving the original intent."
-    if isinstance(item, str):
-      o = self.j(p=p, i=f'P: {self.data}\nx: {item}')
+    p = 'Add the instruction or requirement [x] to the existing Prompt [P], follow Standard [S]'
+    s = [
+      Message(label='S', content='Integrate it naturally into the Prompt structure while preserving the original intent.'),
+      Message(label='S', content='Answer only, no explanation. Surrounding the answer with <result> tags. Example: <result>Answer here</result>'),
+    ]
+    self.content.label = 'P'
+    i = [self.content, Message(item, label='x')]
+    o = self.j(p=p, i=i, s=s)
+    res = get_result(str(o))
+    res = Message(res[0], role='assistant', label=self.j.model)
     if replace:
-      self.data = o
-    return o
+      self.content = res
+    return res
   
   def remove(self, item, replace=True):
-    p = "Remove the instruction or requirement 'x' from Prompt P if it exists. Return the modified prompt with natural flow preserved."
-    if isinstance(item, str):
-      o = self.j(p=p, i=f'P: {self.data}\nx: {item}')
-      self.data = o
+    p = 'Remove the instruction or requirement [x] from Prompt [P] if it exists, follow Standard [S]'
+    s = [
+      Message(label='S', content='Return the modified Prompt with natural flow preserved.'),
+      Message(label='S', content='Answer only, no explanation. Surrounding the answer with <result> tags. Example: <result>New Prompt here</result>'),
+    ]
+    self.content.label = 'P'
+    i = [self.content, Message(item, label='x')]
+    o = self.j(p=p, i=i, s=s)
+    res = get_result(str(o))
+    res = Message(res[0], role='assistant', label=self.j.model)
     if replace:
-      self.data = o
-    return o
+      self.content = res
+    return res
   
   def __contains__(self, item):
-    p = "Check if the instruction or requirement 'x' is already contained within Prompt P. Answer with 'Yes' or 'No' only."
-    if isinstance(item, str):
-      o = self.j(p=p, i=f'P: {self.data}\nx: {item}')
-    return o
+    p = 'Check if the instruction or requirement [x] is already contained within Prompt [P], follow Standard [S]'
+    s = Message(label='S', content="Answer with 'True' or 'False' only, surrounding the answer with <result> tags. Example: <result>True</result>")
+    self.content.label = 'P'
+    i = [self.content, Message(item, label='x')]
+    o = self.j(p=p, i=i, s=s)
+    res = get_result(str(o))
+    res = Message(res[0], role='assistant', label=self.j.model)
+    return res
 
   def __len__(self):
-    p = 'Break down this Prompt into individual instructions or tasks, then count how many separate components it contains. Return only the number.'
-    o = self.j(p=p, i=f'P: {self.data}')
-    return o
+    p = 'Break down this Prompt [P] into individual instructions or tasks, then count how many separate components it contains, follow Standard [S]'
+    s = Message(label='S', content="Return only the number, surrounding the answer with <result> tags. Example: <result>3</result>")
+    self.content.label = 'P'
+    i = [self.content]
+    o = self.j(p=p, i=i, s=s)
+    res = get_result(str(o))
+    res = Message(res[0], role='assistant', label=self.j.model)
+    return res
 
   def __iter__(self): pass
   def __next__(self): pass
@@ -60,41 +93,79 @@ class Prompt:
   # ----------------------------------------
   # Set vs Set
   # ----------------------------------------
-  def __or__(self, other, replace=False):
-    p = "Merge all instructions and requirements from both P1 and P2 into one coherent prompt. Remove duplicates and ensure natural flow."
-    if isinstance(other, Prompt):
-      p2 = p2.data
-    o = self.j(p=p, i=f'P1: {self.data}\nP2: {p2}')
-    if replace:
-      self.data = o
-    return o
 
-  def __and__(self, other, replace=False):
-    p = "Identify only the common instructions and requirements that appear in both P1 and P2. Create a new prompt containing only these shared elements."
-    if isinstance(other, Prompt):
-      p2 = p2.data
-    o = self.j(p=p, i=f'P1: {self.data}\nP2: {p2}')
-    if replace:
-      self.data = o
-    return o
+  def _or(self, other):
+    p = 'Merge all instructions and requirements from both [P1] and [P2] into one coherent prompt. Remove duplicates and ensure natural flow. Follow Standard [S]'
+    s = Message(label='S', content='Answer only, no explanation. Surrounding the answer with <result> tags. Example: <result>New Prompt here</result>')
+    self.content.label = 'P1'
+    other = other.content if isinstance(other, Prompt) else Message(other, label='P2')
+    i = [self.content, other]
+    o = self.j(p=p, i=i, s=s)
+    res = get_result(str(o))
+    res = Message(res[0], role='assistant', label=self.j.model)
+    return res
 
-  def __sub__(self, other, replace=False):
-    p = "Extract instructions and requirements that exist only in P1 but not in P2. Create a new prompt containing only these unique P1 elements."
-    if isinstance(other, Prompt):
-      p2 = p2.data
-    o = self.j(p=p, i=f'P1: {self.data}\nP2: {p2}')
-    if replace:
-      self.data = o
-    return o
+  def __or__(self, other):
+    return Prompt(content=self._or(other), model=self.j.model)
 
-  def __xor__(self, other, replace=False):
-    p = "Find instructions and requirements that exist in only one of P1 or P2, but not in both. Create a new prompt combining these unique elements from each."
-    if isinstance(other, Prompt):
-      p2 = p2.data
-    o = self.j(p=p, i=f'P1: {self.data}\nP2: {p2}')
-    if replace:
-      self.data = o
-    return o
+  def __ior__(self, other):
+    self.content = self._or(other)
+    return self
+
+  def _and(self, other):
+    p = "Identify only the common instructions and requirements that appear in both [P1] and [P2]. Create a new prompt containing only these shared elements. Follow Standard [S]"
+    s = Message(label='S', content='Answer only, no explanation. Surrounding the answer with <result> tags. Example: <result>New Prompt here</result>')
+    self.content.label = 'P1'
+    other = other.content if isinstance(other, Prompt) else Message(other, label='P2')
+    i = [self.content, other]
+    o = self.j(p=p, i=i, s=s)
+    res = get_result(str(o))
+    res = Message(res[0], role='assistant', label=self.j.model)
+    return res
+
+  def __and__(self, other):
+    return Prompt(content=self._and(other), model=self.j.model)
+
+  def __iand__(self, other):
+    self.content = self._and(other)
+    return self
+  
+  def _sub(self, other):
+    p = "Extract instructions and requirements that exist only in P1 but not in P2. Create a new prompt containing only these unique P1 elements. Follow Standard [S]"
+    s = Message(label='S', content='Answer only, no explanation. Surrounding the answer with <result> tags. Example: <result>New Prompt here</result>')
+    self.content.label = 'P1'
+    other = other.content if isinstance(other, Prompt) else Message(other, label='P2')
+    i = [self.content, other]
+    o = self.j(p=p, i=i, s=s)
+    res = get_result(str(o))
+    res = Message(res[0], role='assistant', label=self.j.model)
+    return res
+
+  def __sub__(self, other):
+    return Prompt(content=self._sub(other), model=self.j.model)
+
+  def __isub__(self, other):
+    self.content = self._sub(other)
+    return self
+
+  def _xor(self, other):
+    p = "Find instructions and requirements that exist in only one of P1 or P2, but not in both. Create a new prompt combining these unique elements from each. Follow Standard [S]"
+    s = Message(label='S', content='Answer only, no explanation. Surrounding the answer with <result> tags. Example: <result>New Prompt here</result>')
+    self.content.label = 'P1'
+    other = other.content if isinstance(other, Prompt) else Message(other, label='P2')
+    i = [self.content, other]
+    o = self.j(p=p, i=i, s=s)
+    res = get_result(str(o))
+    res = Message(res[0], role='assistant', label=self.j.model)
+    return res
+  
+  def __xor__(self, other):
+    return Prompt(content=self._xor(other), model=self.j.model)
+
+  def __ixor__(self, other):
+    self.content = self._xor(other)
+    return self
+
 
   # ----------------------------------------
   # Compare Set

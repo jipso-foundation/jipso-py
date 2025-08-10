@@ -1,7 +1,7 @@
 from jipso.Conversation import Conversation
 
 
-class Standard(Conversation):
+class Standard:
   """Defines evaluation criteria and quality expectations.
   
   The Standard component (S) specifies WHAT constitutes good output - quality
@@ -14,4 +14,5 @@ class Standard(Conversation):
   compliance frameworks, and systematic quality assurance standards from
   industry and academic institutions.
   """
-  pass
+  def __init__(self, content):
+    self.content = Conversation(content)

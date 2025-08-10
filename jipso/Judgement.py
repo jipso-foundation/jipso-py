@@ -2,7 +2,6 @@ from jipso.utils import get_platform, get_client
 from jipso.Conversation import Conversation
 from jipso.Input import Input
 from jipso.Standard import Standard
-from jipso.Input import Input
 from jipso.Output import Output
 
 
@@ -25,7 +24,7 @@ class Judgement:
     self.client = get_client(self.platform)
 
   def __call__(self, i=None, p=None, s=None):
-    chat = Conversation(p) + Standard(s) + Input(i)
+    chat = Conversation(p) + Standard(s).content + Input(i).content
     text = chat.request(platform=self.platform)
 
     if self.platform in {'Openai', 'Alibabacloud', 'Byteplus'}:
