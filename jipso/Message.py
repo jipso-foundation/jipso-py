@@ -39,7 +39,9 @@ class Message:
       for k,v in content.items():
         setattr(self, k, v)
       if not hasattr(self, 'content'): self.content = ''
-
+    elif hasattr(content, 'content'):
+      self.content = to_str(content.content)
+    
     if hash:
       self._hash = hashlib.sha3_256(self.content.encode())
     

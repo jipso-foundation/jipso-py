@@ -214,10 +214,29 @@ Follow Standard [S]
     i = [self.content, other]
     return self.j.exe(i=i, s=s, p=p)
 
-  def __lt__(self, other): pass
-  def __le__(self, other): pass
-  def __gt__(self, other): pass
-  def __ge__(self, other): pass
+  def __lt__(self, other):
+    res = self.pvp(other).content
+    try: res = int(res)
+    except: return None
+    else: return res < 5
+
+  def __le__(self, other):
+    res = self.pvp(other).content
+    try: res = int(res)
+    except: return None
+    else: return res <= 5
+
+  def __gt__(self, other):
+    res = self.pvp(other).content
+    try: res = int(res)
+    except: return None
+    else: return res > 5
+
+  def __ge__(self, other):
+    res = self.pvp(other).content
+    try: res = int(res)
+    except: return None
+    else: return res >= 5
 
   # ----------------------------------------
   # Special
@@ -227,3 +246,9 @@ Follow Standard [S]
   def tuple(self): pass
   def to_json(self): pass
   def to_text(self): pass
+
+  # ----------------------------------------
+
+  def pvp(self, other):
+    from jipso.pvp import pvp
+    return pvp(p1=self.content, p2=other)

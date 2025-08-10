@@ -1,4 +1,4 @@
-__version__ = '0.1.25'
+__version__ = '0.1.26'
 
 from jipso.Judgement import Judgement
 from jipso.Input import Input

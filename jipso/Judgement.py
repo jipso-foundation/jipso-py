@@ -36,7 +36,7 @@ class Judgement:
       self.platform = get_platform(self.model)
       self.client = get_client(self.platform)
 
-    chat = Conversation(p) + Standard(s).content + Input(i).content
+    chat = Input(i).content + Standard(s).content + Conversation(p)
     text = chat.request(platform=self.platform)
 
     if self.platform in {'Openai', 'Alibabacloud', 'Byteplus'}:
@@ -84,5 +84,4 @@ class Judgement:
   def exe(self, i=None, p=None, s=None, j=None, verbose=False):
     o = self(p=p, i=i, s=s, j=j)
     res = get_result(str(o))[0] if not verbose else str(o)
-    res = Message(res, role='assistant', label=self.model)
-    return res
+    return Message(res, role='assistant', label=self.model)
