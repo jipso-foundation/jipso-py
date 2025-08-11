@@ -1,104 +1,185 @@
-import os, hashlib, httpx
-
-def to_str(content) -> str | None:
-  if content is None:
-    return ''
-  if isinstance(content, str):
-    content = content.lstrip()
-    if os.path.isfile(content):
-      with open(content, 'r') as f: content = f.read()
-    elif content.startswith('file://'):
-      path = content.strip()[len('file://'):]
-      if os.path.isfile(path):
-        with open(path, 'r') as f: content = f.read()
-    elif content.startswith('https://'):
-      path = content.strip()[len('https://'):]
-      content = httpx.get(path, follow_redirects=True)
-    elif content.startswith('http://'):
-      path = content.strip()[len('http://'):]
-      content = httpx.get(path, follow_redirects=True, verify=False)
-    return content
-  elif isinstance(content, int|float):
-    return str(content)
-  elif isinstance(content, bytes):
-    for encoding in ['utf-8', 'utf-16', 'latin1', 'cp1252']:
-      try:
-        return content.decode(encoding)
-      except UnicodeDecodeError:
-        continue
-    return content.decode('utf-8', errors='replace')
-  elif isinstance(content, Message):
-    if hasattr(content, 'content'):
-      return content.content
-  return None
+from sqlalchemy import Column, String
+from jipso.utils import get_str
+import uuid
+from jipso.data.base import Base
 
 
-class Message:
-  def __init__(self, content, role=None, hash=True, label=None):
-    tmp = to_str(content)
-    if tmp is not None:
-      self.content = tmp
-    elif len(content) == 0:
-      self.content = ''
-    elif isinstance(content, list|tuple|set):
-      self.content = '\n'.join([to_str(item) for item in content])
-    elif isinstance(content, dict):
-      for k,v in content.items():
-        setattr(self, k, v)
-      if not hasattr(self, 'content'): self.content = ''
-    elif hasattr(content, 'content'):
-      self.content = to_str(content.content)
-    
-    if hash:
-      self._hash = hashlib.sha3_256(self.content.encode())
-    
-    if label:
-      self.label = label
+class Message(Base):
+  __tablename__ = 'message'
+  id = Column(String(32), primary_key=True)
+  content = Column(String, nullable=False)
+  role = Column(String, nullable=False)
+  label = Column(String, nullable=True)
+  type = Column(String, nullable=False)
 
-    if role:
-      self.role = role
+  def __init__(self, content, role='user', label=None, type='txt'):
+    if isinstance(content, str) and len(content.strip()) == 32:
+      self.id = content
+      content = self.load()
+    if isinstance(content, Message):
+      for h in ['id', 'content', 'role', 'label', 'type']:
+        setattr(self, h, getattr(content, h))
     else:
-      if not hasattr(self, 'role') or not self.role:
-        self.role = 'user'
-
-  @property
-  def hash(self) -> str:
-    return self._hash.hexdigest()
+      self.id = uuid.uuid4().hex
+      tmp = get_str(content)
+      if tmp is not None:
+        self.content = tmp
+      elif len(content) == 0:
+        self.content = ''
+      elif isinstance(content, list|tuple|set):
+        tmp = []
+        for item in content:
+          if isinstance(item, Message):
+            tmp.append(item.content)
+          else:
+            tmp.append(get_str(item))
+        self.content = '\n'.join(tmp)
+    self.role = role
+    self.label = label
+    self.type = type
+    
 
   def __str__(self) -> str:
     content = self.content
-    if hasattr(self, 'label') and self.label:
+    if self.label:
       content = f'[{self.label}] {content}'
     return f'{self.role}: {content}'
-  
+
   def __repr__(self) -> str:
     return f'Message({str(self)})'
+
+  def __hash__(self) -> int:
+    return int(self.id, 16)
 
   def __copy__(self):
     return Message(self)
 
-  def __hash__(self) -> int:
-    return int.from_bytes(self._hash.digest(), byteorder='big')
-  
   def __eq__(self, other) -> bool:
-    if isinstance(other, str) and len(other.strip()) == 64:
-      return self.hash == other
+    if isinstance(other, str) and len(other.strip()) == 32:
+      return self.id == other
     if not isinstance(other, Message):
       other = Message(other)
-    return self.hash == other.hash
-  
+    return self.id == other.id
+
   def __ne__(self, other):
     return not self.__eq__(other)
-
-  def __contains__(self, item) -> bool:
-    return Message(item, hash=False).content in self.content
-
-  def __len__(self) -> int:
-    return len(self.content)
   
   def __bool__(self) -> bool:
     return bool(self.content)
+
+  def __contains__(self, item) -> bool:
+    return get_str(item) in get_str(self.content)
   
   def __add__(self, other):
-    self.content += Message(other, hash=False).content
-    self._hash = hashlib.sha3_256(self.content.encode())
+    new = self.__copy__()
+    new.content = get_str(self.content) + get_str(other)
+    return new
+  
+  def __iadd__(self, other):
+    res = get_str(self.content) + get_str(other)
+    self.content = res
+    return self
+
+  # ----------------------------------------
+
+  def save(self, session=None):
+    if session is not None:
+      try:
+        session.add(self)
+        session.commit()
+      except Exception as e:
+        session.rollback()
+        raise e
+    else:
+      from sqlalchemy import create_engine
+      from sqlalchemy.orm import sessionmaker
+      from dotenv import load_dotenv
+      from os import getenv
+      load_dotenv()  
+      engine = create_engine(getenv('DATABASE', 'sqlite:///database.sqlite3'))
+      Session = sessionmaker(bind=engine)
+      session = Session()
+      try:
+        session.add(self)
+        session.commit()
+        session.refresh(self)
+        return self
+      except Exception as e:
+        session.rollback()
+        raise e
+      finally:
+        session.close()
+  
+  def load(self, session=None):
+    if session is not None:
+      return session.query(Message).filter_by(id=self.id).first()
+    else:
+      from sqlalchemy import create_engine
+      from sqlalchemy.orm import sessionmaker
+      from dotenv import load_dotenv
+      from os import getenv
+      load_dotenv()  
+      engine = create_engine(getenv('DATABASE', 'sqlite:///database.sqlite3'))
+      Session = sessionmaker(bind=engine)
+      session = Session()
+      try: return session.query(Message).filter_by(id=self.id).first()
+      finally: session.close()
+
+  def delete(self, session=None):
+    if session is not None:
+      item = session.query(Message).filter_by(id=self.id).first()
+      if item:
+        for h in ['content', 'role', 'label', 'type']:
+          setattr(item, h, getattr(self, h))
+        session.commit()
+    else:
+      from sqlalchemy import create_engine
+      from sqlalchemy.orm import sessionmaker
+      from dotenv import load_dotenv
+      from os import getenv
+      load_dotenv()  
+      engine = create_engine(getenv('DATABASE', 'sqlite:///database.sqlite3'))
+      Session = sessionmaker(bind=engine)
+      session = Session()
+      try:
+        item = session.query(Message).filter_by(id=self.id).first()
+        if item:
+          session.delete(item)
+          session.commit()
+      except Exception as e:
+        session.rollback()
+        raise e
+      finally:
+        session.close()
+
+  def update(self, session=None):
+    if session is not None:
+      item = session.query(Message).filter_by(id=self.id).first()
+      if item:
+        for h in ['content', 'role', 'label', 'type']:
+          setattr(item, h, getattr(self, h))
+      else:
+        session.add(self)
+      session.commit()
+    else:
+      from sqlalchemy import create_engine
+      from sqlalchemy.orm import sessionmaker
+      from dotenv import load_dotenv
+      from os import getenv
+      load_dotenv()  
+      engine = create_engine(getenv('DATABASE', 'sqlite:///database.sqlite3'))
+      Session = sessionmaker(bind=engine)
+      session = Session()
+      try:
+        item = session.query(Message).filter_by(id=self.id).first()
+        if item:
+          for h in ['content', 'role', 'label', 'type']:
+            setattr(item, h, getattr(self, h))
+        else:
+          session.add(self)
+        session.commit()
+      except Exception as e:
+        session.rollback()
+        raise e
+      finally:
+        session.close()

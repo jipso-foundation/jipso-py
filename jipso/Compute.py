@@ -26,7 +26,7 @@ class Compute:
       from dotenv import load_dotenv
       from os import getenv
       load_dotenv()
-      j = getenv('DEFAUT_MODEL')
+      j = getenv('DEFAUT_MODEL', 'gpt-3.5-turbo')
     self.j = j
 
   def exe(self):

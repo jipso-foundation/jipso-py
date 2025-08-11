@@ -111,7 +111,7 @@ class Conversation:
     from dotenv import load_dotenv
     from os import getenv
     load_dotenv()
-    return getenv('DEFAULT_PLATFORM')
+    return getenv('DEFAULT_PLATFORM', 'Openai')
 
 
   def request(self, platform=None, model=None):

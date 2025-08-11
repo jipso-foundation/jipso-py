@@ -49,3 +49,5 @@ logs/
 .env
 
 dev/
+
+database.sqlite3
