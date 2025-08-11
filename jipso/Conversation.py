@@ -1,70 +1,151 @@
-from jipso.utils import get_platform
 from jipso.Message import Message
-from copy import copy
+from jipso.utils import get_str, get_platform
+from uuid import uuid4
+import os, ujson
 
 
 class Conversation:
   def __init__(self, content):
-    self.content = self.init_content(content)
-    if isinstance(content, Conversation):
-      for attr in {'model', 'platform', 'client'}:
-        if hasattr(content, attr):
-          setattr(self, attr, getattr(content, attr))
+    self.id = uuid4().hex
+    if isinstance(content, dict):
+      for k, v in content.items():
+        if k != 'content':
+          setattr(self, k, v)
+      self.content = self.init_content(content.get('content', []))
+    else:
+      self.content = self.init_content(content)
     self._iterator_index = 0
 
-
-
   def init_content(self, content):
-    if content is None or isinstance(content, str|int|float|bytes|Message):
-      return [Message(content)]
-    elif isinstance(content, list|tuple|set):
-      res = []
-      for item in content:
-        if item:
-          if not isinstance(item, Message):
-            item = Message(item)
-          res.append(item)
-      return res
+    if content is None:
+      return []
     elif isinstance(content, Conversation):
-      return content.content.copy() if content else []
-    elif isinstance(content, dict):
-      if content.get('content', False):
+      return content.content if content else []
+    elif isinstance(content, Message):
+      return [content] if content else []
+    elif isinstance(content, str):
+      return [Message(content)] if len(content) > 0 else []
+    elif isinstance(content, int | float | bytes | bool):
+      return [Message(content)]
+    elif isinstance(content, (list, set, tuple)):
+      if len(content) == 0:
         return []
-      else:
-        return self.init_content(content['content'])
+      arr = []
+      for item in content:
+        if isinstance(item, Conversation):
+          arr.extend(item.content)
+        elif isinstance(item, Message):
+          if item:
+            arr.append(item)
+        else:
+          item = Message(item)
+          if item:
+            arr.append(item)
+      return arr
+    elif isinstance(content, dict):
+      content = ujson.dumps(content)
+      return [Message(content)] if len(content) > 0 else []
+    else:
+      content = str(content)
+      return [Message(content)] if len(content) > 0 else []
+
+  def dict(self):
+    res = {
+      'id': self.id,
+      'content': [],
+    }
+    for m in self.content:
+      res['content'].append(m.dict())
+    for h in ['platform', 'model']:
+      if hasattr(self, h):
+        res[h] = getattr(self, h)
+    return res
 
   # ----------------------------------------
 
   def __str__(self) -> str:
     return '\n'.join([str(m) for m in self.content])
-
+  
   def __repr__(self) -> str:
     return f'Conversation({len(self)} Message)'
   
+  def __len__(self) -> int:
+    return len(self.content)
+  
+  def __bool__(self) -> bool:
+    return hasattr(self, 'content') and self.content is not None and len(self) > 0
+  
+  def __hash__(self) -> int:
+    return int(self.id, 16)
+
   def __copy__(self):
-    return Conversation(self)
+    item = Conversation(self)
+    item.id = uuid4().hex
+    for h in ['platform', 'model']:
+      if hasattr(self, h):
+        setattr(item, h, getattr(self, h))
+    return item
+
+  def __contains__(self, item) -> bool:
+    if not self: return False
+    if isinstance(item, Conversation): return False
+    if isinstance(item, Message):
+      if not item: return False
+      item = item.content
+    try: item = get_str(item)
+    except: return False
+    if not isinstance(item, str): return False
+    for m in self.content:
+      if item == get_str(m.content):
+        return True
+    return False
+  
+  # ----------------------------------------
+
+  def find(self, item) -> tuple:
+    if not self: return None, None
+    if isinstance(item, int|float):
+      item = int(item) % len(self.content)
+      return item, self.content[item]
+    if isinstance(item, Conversation): return None, None
+    if isinstance(item, Message):
+      if not item: return None, None
+      item = item.content
+    try: item = get_str(item)
+    except: return None, None
+    if isinstance(item, str):
+      if len(item.strip()) == 32:
+        item = item.strip().lower()
+        for i,m in enumerate(self.content):
+          if m.id == item:
+            return i,m
+      for i,m in enumerate(self.content):
+        if get_str(m.content) == item:
+          return i,m
+    return None, None
 
   def __getitem__(self, index):
     return self.find(index)[1]
-
-
+  
   def __setitem__(self, index, value):
-    index = self.find(self, index)[0]
-    if index is not None:
-      self.content[index] = Message(value)
+    if not self: return None
+    if isinstance(value, Conversation): return None
+    value = Message(value)
+    if not value: return None
+    index = self.find(index)[0]
+    if index is None or not isinstance(index, int): return None
+    self.content[index] = value
 
   def __delitem__(self, index):
-    index = self.find(self, index)[0]
-    if index is not None:
-      del self.content[index]
-
-  def __len__(self) -> int:
-    return len(self.content)
+    if not self: return None
+    index = self.find(index)[0]
+    if index is None or not isinstance(index, int): return None
+    del self.content[index]
 
   def __iter__(self):
     self._iterator_index = 0
     return self
-    
+
   def __next__(self):
     if self._iterator_index >= len(self.content):
       raise StopIteration
@@ -72,50 +153,22 @@ class Conversation:
     self._iterator_index += 1
     return result
   
-  def __contains__(self, item) -> bool:
-    return self.find(item)[0] is not None
-  
-  def __bool__(self) -> bool:
-    return len(self.content) != 0
-
   # ----------------------------------------
 
-  def find_by_hash(self, item):
-    item = item.strip().lower()
-    for k,m in enumerate(self.content):
-      if m.hash == item:
-        return k,m
-    return None, None
-  
-  def find(self, item):
-    if isinstance(item, str):
-      if len(item.strip()) != 64:
-        item = Message(item).hash
-      return self.find_by_hash(item)
-    else:
-      try: item = int(item) % len(self.content)
-      except: return None, None
-      else: return item, self.content[item]
-
-  # ----------------------------------------
-
-  def get_platform(self, platform, model):
-    if platform is not None: return platform
-    if model is not None:
-      platform = get_platform(model)
-      if platform is not None: return platform
-    if hasattr(self, 'platform') and self.platform is not None: return self.platform
-    if hasattr(self, 'model') and self.model is not None:
-      platform = get_platform(self.model)
-      if platform is not None: return platform
-    from dotenv import load_dotenv
-    from os import getenv
-    load_dotenv()
-    return getenv('DEFAULT_PLATFORM', 'Openai')
-
-
+  def set_platform(self, platform, model):
+    if model is not None: self.model = model
+    if platform is not None: self.platform = platform
+    if self.platform is None:
+      if self.model is not None:
+        self.platform = get_platform(self.model)
+      else:
+        from dotenv import load_dotenv
+        load_dotenv()
+        return os.getenv('DEFAULT_PLATFORM', 'Openai')
+      
   def request(self, platform=None, model=None):
-    platform = self.get_platform(platform, model)
+    if not self: return []
+    self.set_platform(platform=platform, model=model)
     new_content = ['']*len(self.content)
     for k,m in enumerate(self.content):
       if hasattr(m, 'label') and m.label:
@@ -142,22 +195,50 @@ class Conversation:
 
   # ----------------------------------------
 
-  def append(self, item, replace=True):
-    chat = self if replace else copy(self)
+  def item_add(self, item) -> list|None:
+    if isinstance(item, Conversation):
+      return item.content if item else None
     if not isinstance(item, Message):
       item = Message(item)
-    chat.content.append(item)
-    return chat
+    return [Message(item)] if item else None
 
-  def extend(self, other, replace=True):
-    chat = self if replace else copy(self)
-    if not isinstance(other, Conversation):
-      other = Conversation(other)
-    chat.content.extend(other)
-    return chat
+  def __add__(self, item):
+    item = self.item_add(item)
+    res = self.__copy__()
+    if item is not None:
+      res.content.extend(item)
+    return res
   
-  def __add__(self, other):
-    return self.extend(other, replace=False)
+  def __iadd__(self, item):
+    item = self.item_add(item)
+    if item is not None:
+      self.content.extend(item)
+    return self
   
-  def __iadd__(self, other):
-    return self.extend(other, replace=True)
+  def append(self, item):
+    self.__iadd__(item)
+
+  def extend(self, item):
+    self.__iadd__(item)
+
+
+def save_conversation(item:Conversation|None) -> str|None:
+  if not isinstance(item, Conversation): return None
+  from dotenv import load_dotenv
+  load_dotenv()
+  db = os.getenv('DATABASE', 'data')
+  os.makedirs(db, exist_ok=True)
+  path = os.path.join(db, f'{item.id}.json')
+  with open(path, 'w') as f: f.write(ujson.dumps(item.dict(), indent=2))
+  return path
+
+
+def load_conversation(item:str) -> Conversation|None:
+  if not isinstance(item, str): return None
+  from dotenv import load_dotenv
+  load_dotenv()
+  db = os.getenv('DATABASE', 'data')
+  path = os.path.join(db, f'{item}.json')
+  if not os.path.isfile(path): return None
+  with open(path, 'r') as f: data = ujson.load(f)
+  return Conversation(data)

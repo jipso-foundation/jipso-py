@@ -18,16 +18,17 @@ class Compute:
   and platforms.
   """
   def __init__(self, j=None, i=None, p=None, s=None, o=None):
-    self.i = i
-    self.p = p
-    self.s = s
-    self.o = o
+    self.i = i if isinstance(i, Conversation) else Conversation(i)
+    self.p = p if isinstance(p, Conversation) else Conversation(p)
+    self.s = s if isinstance(s, Conversation) else Conversation(s)
+    self.o = o if isinstance(o, Output) else Conversation(o)
     if j is None:
       from dotenv import load_dotenv
       from os import getenv
       load_dotenv()
       j = getenv('DEFAUT_MODEL', 'gpt-3.5-turbo')
     self.j = j
+
 
   def exe(self):
     self.platform = get_platform(self.j)

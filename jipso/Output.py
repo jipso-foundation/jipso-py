@@ -1,3 +1,11 @@
+from uuid import uuid4
+import ujson, os
+
+from anthropic.types.message import Message as Output_Anthropic
+from openai.types.chat.chat_completion import ChatCompletion as Output_Openai
+from google.generativeai.types.generation_types import GenerateContentResponse as Output_Gemini
+from xai_sdk.chat import Response as Output_Xai
+
 class Output:
   """Represents results and products of AI evaluation.
   
@@ -10,11 +18,11 @@ class Output:
   provenance tracking, and systematic comparison operations for output
   quality control and continuous improvement.
   """
-  def __init__(self, response, model, platform):
-    self.model = model
-    self.platform = platform
+  def __init__(self, response):
+    self.id = uuid4().hex
 
-    if self.platform in {'Openai', 'Alibabacloud', 'Byteplus'}:
+    if isinstance(response, Output_Openai):
+      self.platform = 'Openai'
       self.response ={
         'id': response.id,
         'created': response.created,
@@ -56,7 +64,8 @@ class Output:
         ],
       }
 
-    elif self.platform == 'Anthropic':
+    elif isinstance(response, Output_Anthropic):
+      self.platform = 'Anthropic'
       from anthropic.types.thinking_block import ThinkingBlock
       from anthropic.types.text_block import TextBlock
       content = []
@@ -78,8 +87,9 @@ class Output:
           'output_tokens': response.usage.output_tokens,
         }
       }
-
-    elif self.platform == 'Gemini':
+    
+    elif isinstance(response, Output_Gemini):
+      self.platform = 'Gemini'
       self.response = {
         'done': response._done,
         'iterator': response._iterator,
@@ -99,7 +109,9 @@ class Output:
           } for u in response._result.candidates],
         }
       }
-    elif self.platform == 'Xai':
+
+    elif isinstance(response, Output_Xai):
+      self.platform = 'Xai'
       self.response = {
         'content': response.content,
         'reasoning_content': response.reasoning_content,
@@ -116,6 +128,7 @@ class Output:
           'cached_prompt_text_tokens': response.usage.cached_prompt_text_tokens,
         }
       }
+
     else:
       self.response = response
 
@@ -128,3 +141,35 @@ class Output:
       return self.response['result']['candidates'][0]['content']['parts'][0]['text']
     elif self.platform == 'Xai':
       return self.response['content']
+    
+  def dict(self) -> dict:
+    res = {
+      'id': self.id,
+      'platform': self.platform,
+    }
+    # for h in ['model']:
+    #   if hasattr(self, h):
+    #     res[h] = getattr(self, h)
+    return res
+
+
+def save_output(item:Output|None) -> str|None:
+  if not isinstance(item, Output): return None
+  from dotenv import load_dotenv
+  load_dotenv()
+  db = os.getenv('DATABASE', 'data')
+  os.makedirs(db, exist_ok=True)
+  path = os.path.join(db, f'{item.id}.json')
+  with open(path, 'w') as f: f.write(ujson.dumps(item.dict(), indent=2))
+  return path
+
+
+def load_output(item:str) -> Output|None:
+  if not isinstance(item, str): return None
+  from dotenv import load_dotenv
+  load_dotenv()
+  db = os.getenv('DATABASE', 'data')
+  path = os.path.join(db, f'{item}.json')
+  if not os.path.isfile(path): return None
+  with open(path, 'r') as f: data = ujson.load(f)
+  return Output(data)
