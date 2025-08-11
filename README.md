@@ -24,14 +24,14 @@ pip install jipso
 ### Example 1
 
 ```python
-import jipso
+from jipso.pvp import pvp
 import os
 
 os.environ['OPENAI_API_KEY'] = 'sk-proj-...'
 
 prompt1 = 'Write leave request email'
 prompt2 = 'Write formal leave request email with clear reason and timeline'
-o_eval = jipso.pvp(prompt1, prompt2)
+o_eval = pvp(prompt1, prompt2)
 print(o_eval)
 
 # ✅ **Function executed:** pvp("Write leave request email", "Write formal leave request email with clear reason and timeline"
@@ -49,15 +49,15 @@ print(o_eval)
 ### Example 2 (2235)
 
 ```python
-import jipso
+from jipso.Prompt import Prompt
 
 os.environ['ANTHROPIC_API_KEY'] = 'sk-ant-...'
 
-p1 = jipso.Prompt('Collect sales figures this week')
+p1 = Prompt('Collect sales figures this week')
 print(p1.add('Customer trend analysis'))
 # Collect sales figures this week and perform customer trend analysis
 
-p2 = jipso.Prompt('Customer trend analysis')
+p2 = Prompt('Customer trend analysis')
 p = p1 | p2
 print(p)
 # Collect sales figures this week and perform customer trend analysis
@@ -105,7 +105,7 @@ print(dict(p3))
 # }
 ```
 
-### Example 3
+<!-- ### Example 3
 
 ```python
 import jipso
@@ -121,16 +121,16 @@ print(o)
 
 # **Category: Product Advice**
 # Reason: The email asks about current pricing and promotions for the Dell XPS 13 laptop, indicating the sender is researching to make a purchase decision — in the product consulting group.
-```
+``` -->
 
 ### Example 4
 
 ```python
-import jipso
+from jipso.Compute import Compute
 
 os.environ['ALIBABACLOUD_API_KEY'] = 'sk-...'
 
-compute = jipso.Compute(
+compute = Compute(
   j = 'qwen-turbo',
   i = 'Hi, I would like to ask about the Dell XPS 13 laptop. What is the current price and are there any promotions? Thank you!',
   p = 'Please categorize this email into one of the following categories: Product Advice, Complaints, Technical Support, Orders, Other',

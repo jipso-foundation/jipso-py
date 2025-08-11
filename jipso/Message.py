@@ -1,15 +1,22 @@
-import os, hashlib
+import os, hashlib, httpx
 
 def to_str(content) -> str | None:
   if content is None:
     return ''
   if isinstance(content, str):
+    content = content.lstrip()
     if os.path.isfile(content):
       with open(content, 'r') as f: content = f.read()
-    elif 'file://' in content:
+    elif content.startswith('file://'):
       path = content.strip()[len('file://'):]
       if os.path.isfile(path):
         with open(path, 'r') as f: content = f.read()
+    elif content.startswith('https://'):
+      path = content.strip()[len('https://'):]
+      content = httpx.get(path, follow_redirects=True)
+    elif content.startswith('http://'):
+      path = content.strip()[len('http://'):]
+      content = httpx.get(path, follow_redirects=True, verify=False)
     return content
   elif isinstance(content, int|float):
     return str(content)

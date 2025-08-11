@@ -10,18 +10,13 @@ class Conversation:
       for attr in {'model', 'platform', 'client'}:
         if hasattr(content, attr):
           setattr(self, attr, getattr(content, attr))
-    elif isinstance(content, dict):
-      if 'content' in content:
-        del content['content']
-      for k,v in content.items():
-        setattr(self, k, v)
     self._iterator_index = 0
+
 
 
   def init_content(self, content):
     if content is None or isinstance(content, str|int|float|bytes|Message):
-      item = Message(content)
-      return [item] if item else []
+      return [Message(content)]
     elif isinstance(content, list|tuple|set):
       res = []
       for item in content:

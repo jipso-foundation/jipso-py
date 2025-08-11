@@ -1,5 +1,5 @@
 from jipso.Message import Message
-from jipso.Judgement import Judgement
+from jipso.Compute import Compute
 
 
 def pvp(p1, p2, verbose=False, j_eval=None, i=None, j=None, s=None, o1=None, o2=None):
@@ -18,9 +18,9 @@ def pvp(p1, p2, verbose=False, j_eval=None, i=None, j=None, s=None, o1=None, o2=
   s_eval = 'P2 is baseline 5/10 point'
   s_eval = Message(label='S_eval', content=s_eval)
   if not verbose:
-    s_silent = "Return only the number, surrounding the answer with <result> tags. Example: <result>3</result>"
-    s_silent = Message(label='S', content=s_silent)
-    s_eval = [s_silent, s_eval]
+    s_output = "Return only the number, surrounding the answer with <result> tags. Example: <result>3</result>"
+    s_output = Message(label='S', content=s_output)
+    s_eval = [s_output, s_eval]
   p1 = Message(p1, label='P1')
   p2 = Message(p2, label='P2')
   if s:
@@ -31,12 +31,12 @@ def pvp(p1, p2, verbose=False, j_eval=None, i=None, j=None, s=None, o1=None, o2=
     if j is None:
       j = j_eval
     if o1 is not None:
-      o1 = Judgement(j).exe(i=i, p=p1, s=s) if j is None else Judgement(j).exe(i=i, p=p1)
+      o1 = Compute(j=j, i=i, p=p1).run(verbose=False) if s is None else Compute(j=j, i=i, p=p1, s=[s]).run(verbose=False)
       o1.label = 'O1'
     else:
       o1 = Message(content=o1, label='O1')
     if o2 is not None:
-      o2 = Judgement(j).exe(i=i, p=p2, s=s) if j is None else Judgement(j).exe(i=i, p=p2)
+      o2 = Compute(j=j, i=i, p=p2).run(verbose=False) if s is None else Compute(j=j, i=i, p=p2, s=[s]).run(verbose=False)
       o2.label = 'O2'
     else:
       o2 = Message(content=o2, label='O2')
@@ -53,7 +53,7 @@ def pvp(p1, p2, verbose=False, j_eval=None, i=None, j=None, s=None, o1=None, o2=
     else:
       p_eval = 'Score Prompt [P1] relative to Prompt [P2]'
       i_eval = [p1, p2]
-  return Judgement(j_eval).exe(i=i_eval, s=s_eval, p=p_eval, verbose=verbose)
+  return Compute(j=j_eval, i=i_eval, p=p_eval, s=s_eval).run(verbose=verbose)
 
 
 def gen_input(p1, p2, j_gen=None, s=None):
@@ -64,4 +64,4 @@ def gen_input(p1, p2, j_gen=None, s=None):
     p1 += s
     p2 += s
   i_gen = [p1, p2]
-  return Judgement(j_gen).exe(i=i_gen, p=p_gen, verbose=False)
+  return Compute(j=j_gen, i=i_gen, p=p_gen).run(verbose=False)
