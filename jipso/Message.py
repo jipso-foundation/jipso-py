@@ -3,7 +3,7 @@ from uuid import uuid4
 
 
 class Message:
-  def __init__(self, content=None, role=None, type=None):
+  def __init__(self, content=None, role=None, type=None, model=None):
     self.id = uuid4().hex
     self.init_content(content)
     if not hasattr(self, 'role') or role is not None:
@@ -14,6 +14,8 @@ class Message:
       self.type = type
     if self.type is None:
       self.type = 'txt'
+    if model is not None:
+      self.model = model
 
   def init_content(self, content):
     if content is None:
@@ -58,7 +60,7 @@ class Message:
       'content': self.content,
       'role': self.role,
     }
-    for h in ['label', 'type', 'order', 'user', 'model', 'attach', 'emoji']:
+    for h in ['label', 'type', 'user', 'model', 'attach', 'emoji']:
       if hasattr(self, h):
         res[h] = getattr(self, h)
     return res

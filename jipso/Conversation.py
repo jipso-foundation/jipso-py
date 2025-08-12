@@ -32,7 +32,7 @@ class Conversation:
         return []
       arr = []
       for item in content:
-        if isinstance(item, Conversation):
+        if issubclass(type(item), Conversation):
           arr.extend(item.content)
         elif isinstance(item, Message):
           if item:
@@ -78,17 +78,9 @@ class Conversation:
   def __hash__(self) -> int:
     return int(self.id, 16)
 
-  def __copy__(self):
-    item = Conversation(self)
-    item.id = uuid4().hex
-    for h in ['platform', 'model']:
-      if hasattr(self, h):
-        setattr(item, h, getattr(self, h))
-    return item
-
   def __contains__(self, item) -> bool:
     if not self: return False
-    if isinstance(item, Conversation): return False
+    if issubclass(type(item), Conversation): return False
     if isinstance(item, Message):
       if not item: return False
       item = item.content
@@ -107,7 +99,7 @@ class Conversation:
     if isinstance(item, int|float):
       item = int(item) % len(self.content)
       return item, self.content[item]
-    if isinstance(item, Conversation): return None, None
+    if issubclass(type(item), Conversation): return None, None
     if isinstance(item, Message):
       if not item: return None, None
       item = item.content
@@ -196,7 +188,7 @@ class Conversation:
   # ----------------------------------------
 
   def item_add(self, item) -> list|None:
-    if isinstance(item, Conversation):
+    if issubclass(type(item), Conversation):
       return item.content if item else None
     if not isinstance(item, Message):
       item = Message(item)

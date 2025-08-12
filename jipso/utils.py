@@ -1,4 +1,5 @@
 import os, ujson, httpx
+from uuid import uuid4
 
 
 def get_iri_file(iri):
@@ -107,9 +108,79 @@ def sql_session():
   engine = sql_engine()
   return sessionmaker(bind=engine)
 
+
+def sql_create(item, table, session=None) -> str:
+  def _create(item, session):
+    item_search = session.query(table).filter_by(id=item.id).first()
+    while item_search is not None:
+      item.id = uuid4().hex
+      item_search = session.query(table).filter_by(id=item.id).first()
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item.id
+
+  if session is not None:
+    new_id = _create(item, session)
+  else:
+    Session = sql_session()
+    session = Session()
+    new_id = _create(item, session)
+    session.close()
+  return new_id
+
+
+def sql_read(id:str, table, session=None):
+  def _read(session):
+    return session.query(table).filter_by(id=id).first()
+
+  if session is not None:
+    item = _read(session)
+  else:
+    Session = sql_session()
+    session = Session()
+    item = _read(session)
+    session.close()
+  return item
+
+
+def sql_delete(item, table, session=None) -> None:
+  if isinstance(item, table):
+    item = item.id
+
+  def _delete(item, session):
+    session.query(table).filter_by(id=item).delete()
+    session.commit()
+
+  if session is not None:
+    _delete(item, session)
+  else:
+    Session = sql_session()
+    session = Session()
+    _delete(item, session)
+    session.close()
+
+
+def sql_update(item, table, session=None) -> None:
+  def _update(item, session):
+    db_item = session.query(table).filter_by(id=item.id).first()
+    if db_item:
+      for attr, value in vars(item).items():
+        if attr != '_sa_instance_state':
+          setattr(db_item, attr, value)
+      session.commit()
+
+  if session is not None:
+    _update(session)
+  else:
+    Session = sql_session()
+    session = Session()
+    _update(item, session)
+    session.close()
+
 # ----------------------------------------
 
-def save_mongo(item, collection) -> str:
+def mongo_save(item, collection):
   from dotenv import load_dotenv
   load_dotenv()
   db = os.getenv('DATABASE', 'file://data')
@@ -119,9 +190,8 @@ def save_mongo(item, collection) -> str:
     path = os.path.join(db, collection, f'{item.id}.json')
     os.makedirs(path_dir, exist_ok=True)
     with open(path, 'w') as f: f.write(ujson.dumps(item.dict(), indent=2))
-    return item.id
 
-def load_mongo(id:str, collection) -> dict|None:
+def mongo_load(id:str, collection) -> dict|None:
   from dotenv import load_dotenv
   load_dotenv()
   db = os.getenv('DATABASE', 'file://data')
@@ -131,7 +201,7 @@ def load_mongo(id:str, collection) -> dict|None:
     if not os.path.isfile(path): return None
     with open(path, 'r') as f: return ujson.load(f)
 
-def delete_mongo(item, collection) -> None:
+def mongo_delete(item, collection) -> None:
   from dotenv import load_dotenv
   load_dotenv()
   db = os.getenv('DATABASE', 'file://data')
