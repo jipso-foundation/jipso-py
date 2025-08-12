@@ -1,4 +1,5 @@
 from jipso.Conversation import Conversation
+from jipso.Compute import Compute, exe
 
 
 class Prompt(Conversation):

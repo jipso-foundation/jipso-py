@@ -126,18 +126,18 @@ print(o)
 ### Example 4
 
 ```python
-from jipso.Compute import Compute
+from jipso.Compute import Compute, exe
 
 os.environ['ALIBABACLOUD_API_KEY'] = 'sk-...'
 
-compute = Compute(
-  j = 'qwen-turbo',
-  i = 'Hi, I would like to ask about the Dell XPS 13 laptop. What is the current price and are there any promotions? Thank you!',
-  p = 'Please categorize this email into one of the following categories: Product Advice, Complaints, Technical Support, Orders, Other',
-)
-compute.s = 'Based on the main content and purpose of the email. Choose only 1 category that best fits.'
-compute.exe()
-print(compute.o)
+
+j = 'qwen-turbo'
+i = 'Hi, I would like to ask about the Dell XPS 13 laptop. What is the current price and are there any promotions? Thank you!'
+p = 'Please categorize this email into one of the following categories: Product Advice, Complaints, Technical Support, Orders, Other'
+s = 'Based on the main content and purpose of the email. Choose only 1 category that best fits.'
+
+o = exe(Compute(j=j, i=i, p=p, s=s))
+print(o)
 ```
 
 ## 🕌 ARCHITECT `jipso-stack`

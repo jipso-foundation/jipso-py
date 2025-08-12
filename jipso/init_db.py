@@ -1,4 +1,4 @@
-from jipso.ComputeSQL import ComputeSQL
+from jipso.Compute import ComputeSQL
 from jipso.utils import sql_engine
 import os
 from dotenv import load_dotenv

@@ -1,5 +1,5 @@
 from jipso.Conversation import Conversation
-
+from jipso.utils import get_result
 
 class Output(Conversation):
   """Represents results and products of AI evaluation.
@@ -15,3 +15,6 @@ class Output(Conversation):
   """
   def __repr__(self) -> str:
     return f'Output({str(self)})'
+  
+  def result(self) -> str:
+    return get_result(self.content[-1].content)
