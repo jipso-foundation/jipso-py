@@ -1,5 +1,7 @@
 from jipso.Message import Message
 from jipso.Compute import Compute
+from uuid import uuid4
+
 
 class Prompt:
   """Encapsulates instructions and methodology for AI execution.
@@ -16,9 +18,18 @@ class Prompt:
   """
 
   def __init__(self, content, model=None):
+    self.id = uuid4().hex
     self.content = Message(content)
     self.j = model
 
+  def dict(self) -> dict:
+    res = {
+      'id': self.id,
+      'content': self.content,
+      'model': self.j,
+    }
+    return res
+  
   def __str__(self) -> str:
     return str(self.content)
 
@@ -26,7 +37,7 @@ class Prompt:
     return f'Prompt({str(self)})'
 
   def __copy__(self):
-    return Prompt(content=self.content, model=self.j)
+    return Prompt(content=self.content.__copy__(), model=self.j)
   
   def __bool__(self) -> bool:
     return bool(self.content)

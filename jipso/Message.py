@@ -3,13 +3,17 @@ from uuid import uuid4
 
 
 class Message:
-  def __init__(self, content=None, role=None):
+  def __init__(self, content=None, role=None, type=None):
     self.id = uuid4().hex
     self.init_content(content)
     if not hasattr(self, 'role') or role is not None:
       self.role = role
     if self.role is None:
       self.role = 'user'
+    if not hasattr(self, 'type') or type is not None:
+      self.type = type
+    if self.type is None:
+      self.type = 'txt'
 
   def init_content(self, content):
     if content is None:
@@ -54,7 +58,7 @@ class Message:
       'content': self.content,
       'role': self.role,
     }
-    for h in ['label', 'type', 'order', 'user', 'attach', 'emoji']:
+    for h in ['label', 'type', 'order', 'user', 'model', 'attach', 'emoji']:
       if hasattr(self, h):
         res[h] = getattr(self, h)
     return res
@@ -72,10 +76,11 @@ class Message:
     content = self.content
     if hasattr(self, 'label'):
       content = f'[{self.label}] {content}'
+    if hasattr(self, 'type') and self.type == 'thinking':
+      content = f'[thinking] {content}'
     if hasattr(self, 'user'):
-      return f'{self.user}: {content}'
-    else:
-      return f'{self.role}: {content}'
+      content = f'[{self.user}] {content}'
+    return f'{self.role}: {content}'
   
   def __repr__(self) -> str:
     return f'Message({str(self)})'

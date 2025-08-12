@@ -89,16 +89,54 @@ def get_result(answer):
   b = answer.find('</result>')
   return answer[a:b].strip(), answer[:a] + answer[b:]
 
+# ----------------------------------------
 
-
-
-
-
-def init_session():
+def sql_engine():
   from sqlalchemy import create_engine
-  from sqlalchemy.orm import sessionmaker
   from dotenv import load_dotenv
-  from os import getenv
-  load_dotenv()  
-  engine = create_engine(getenv('DATABASE', 'sqlite:///database.sqlite3'))
+  load_dotenv()
+  db = os.getenv('DATABASE', 'file://data')
+  if db.startswith('file://'):
+    db = db[len('file://'):]
+    os.makedirs(db, exist_ok=True)
+  engine = 'sqlite:///' + os.path.join(db, 'sqlite.db')
+  return create_engine(engine)
+
+def sql_session():
+  from sqlalchemy.orm import sessionmaker
+  engine = sql_engine()
   return sessionmaker(bind=engine)
+
+# ----------------------------------------
+
+def save_mongo(item, collection) -> str:
+  from dotenv import load_dotenv
+  load_dotenv()
+  db = os.getenv('DATABASE', 'file://data')
+  if db.startswith('file://'):
+    db = db[len('file://'):]
+    path_dir = os.path.join(db, collection)
+    path = os.path.join(db, collection, f'{item.id}.json')
+    os.makedirs(path_dir, exist_ok=True)
+    with open(path, 'w') as f: f.write(ujson.dumps(item.dict(), indent=2))
+    return item.id
+
+def load_mongo(id:str, collection) -> dict|None:
+  from dotenv import load_dotenv
+  load_dotenv()
+  db = os.getenv('DATABASE', 'file://data')
+  if db.startswith('file://'):
+    db = db[len('file://'):]
+    path = os.path.join(db, collection, f'{id}.json')
+    if not os.path.isfile(path): return None
+    with open(path, 'r') as f: return ujson.load(f)
+
+def delete_mongo(item, collection) -> None:
+  from dotenv import load_dotenv
+  load_dotenv()
+  db = os.getenv('DATABASE', 'file://data')
+  if not isinstance(item, str): item = item.id
+  if db.startswith('file://'):
+    db = db[len('file://'):]
+    path = os.path.join(db, collection, f'{item}.json')
+    if os.path.exists(path): os.remove(path)

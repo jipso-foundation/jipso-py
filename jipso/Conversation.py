@@ -220,25 +220,3 @@ class Conversation:
 
   def extend(self, item):
     self.__iadd__(item)
-
-
-def save_conversation(item:Conversation|None) -> str|None:
-  if not isinstance(item, Conversation): return None
-  from dotenv import load_dotenv
-  load_dotenv()
-  db = os.getenv('DATABASE', 'data')
-  os.makedirs(db, exist_ok=True)
-  path = os.path.join(db, f'{item.id}.json')
-  with open(path, 'w') as f: f.write(ujson.dumps(item.dict(), indent=2))
-  return path
-
-
-def load_conversation(item:str) -> Conversation|None:
-  if not isinstance(item, str): return None
-  from dotenv import load_dotenv
-  load_dotenv()
-  db = os.getenv('DATABASE', 'data')
-  path = os.path.join(db, f'{item}.json')
-  if not os.path.isfile(path): return None
-  with open(path, 'r') as f: data = ujson.load(f)
-  return Conversation(data)

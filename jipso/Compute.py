@@ -3,6 +3,9 @@ from jipso.Message import Message
 from jipso.Output import Output
 from jipso.utils import get_platform, get_client, get_result
 
+from jipso.ComputeSQL import *
+
+
 
 class Compute:
   """Orchestrates complete JIPSO evaluations and workflows.
